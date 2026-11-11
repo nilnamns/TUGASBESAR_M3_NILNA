@@ -5,17 +5,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\MahasiswaController;
 
-// 1. Halaman utama redirect ke tabel mahasiswa
 Route::get('/', function () {
     return redirect()->route('mahasiswa.index');
 });
 
-// 2. Tampilkan Form Login
 Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
-// 3. Proses Verifikasi Login (Bypass AuthController)
 Route::post('/login', function (Request $request) {
     $credentials = $request->validate([
         'email' => ['required', 'email'],
@@ -30,7 +27,6 @@ Route::post('/login', function (Request $request) {
     return back()->withErrors(['email' => 'Email atau password salah.']);
 });
 
-// 4. Proses Logout
 Route::post('/logout', function (Request $request) {
     Auth::logout();
     $request->session()->invalidate();
@@ -38,12 +34,10 @@ Route::post('/logout', function (Request $request) {
     return redirect('/login');
 })->name('logout');
 
-// 5. Penanganan Link Register
 Route::get('/register', function () {
     return redirect()->route('login');
 })->name('register');
 
-// 6. Proteksi Middleware Auth & Multi-Role
 Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:admin,petugas'])->group(function () {
         Route::get('/mahasiswa', [MahasiswaController::class, 'index'])->name('mahasiswa.index');
